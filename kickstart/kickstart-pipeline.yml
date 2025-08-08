@@ -25,31 +25,6 @@ Resources:
         - Key: Owner
           Value: coffeeland
 
-  ArtifactS3BucketPolicy:
-    Type: AWS::S3::BucketPolicy
-    Properties:
-      Bucket:
-        Ref: ArtifactBucket
-      PolicyDocument:
-        Version: "2012-10-17"
-        Statement:
-          - Sid: DenyIncorrectEncryptionHeader
-            Effect: Deny
-            Principal: "*"
-            Action: s3:PutObject
-            Resource: arn:aws:s3:::streamlit-app-artifact-bucket-${self:provider.stage}
-            Condition:
-              StringNotEquals:
-                s3:x-amz-server-side-encryption: aws:kms
-          - Sid: DenuUnEncryptedObjectUploads
-            Effect: Deny
-            Principal: "*"
-            Action: s3:PutObject
-            Resource: arn:aws:s3:::streamlit-app-artifact-bucket-${self:provider.stage}
-            Condition:
-              Null:
-                s3:x-amz-server-side-encryption: true
-
   CodeBuildProject:
     Type: AWS::CodeBuild::Project
     Properties:

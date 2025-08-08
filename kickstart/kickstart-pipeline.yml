@@ -58,7 +58,6 @@ Resources:
       Artifacts:
         Type: CODEPIPELINE
         Name: streamlit-app-artifact-${self:provider.stage}
-      BadgeEnabled: true
       Environment:
         Type: LINUX_CONTAINER
         Image: aws/codebuild/standard:7.0

@@ -46,7 +46,7 @@ node_modules/
 *.tmp
 
 # Ignore local data
-coffee.csv
+# coffee.csv
 
 # Ignore deployment artifacts
 *.zip

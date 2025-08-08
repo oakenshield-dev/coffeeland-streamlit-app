@@ -1,0 +1,178 @@
+---
+Resources:
+  ArtifactBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: streamlit-app-artifact-bucket-${self:provider.stage}
+      LifecycleCOnfiguration:
+        Rules:
+          - Id: ExpirationRule
+            Status: Enabled
+            ExpirationInDays: 30
+      bucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+      PubliAccessBlockConfiguration:
+        BlockPublicAcls: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+        BlockPublicPolicy: true
+      Tags:
+        - Key: Environment
+          Value: ${self:provider.stage}
+        - Key: Project
+          Value: streamlit-app
+        - Key: Owner
+          Value: coffeeland
+
+  ArtifactS3BucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: ArtifactBucket
+      PolicyDocument:
+        Version: "2012-10-17"
+        Statement:
+          - Sid: DenyIncorrectEncryptionHeader
+            Effect: Deny
+            Principal: "*"
+            Action: s3:PutObject
+            Resource: arn:aws:s3:::streamlit-app-artifact-bucket-${self:provider.stage}
+            Condition:
+              StringNotEquals:
+                s3:x-amz-server-side-encryption: aws:kms
+          - Sid: DenuUnEncryptedObjectUploads
+            Effect: Deny
+            Principal: "*"
+            Action: s3:PutObject
+            Resource: arn:aws:s3:::streamlit-app-artifact-bucket-${self:provider.stage}
+            Condition:
+              Null:
+                s3:x-amz-server-side-encryption: true
+
+  CodeBuildProject:
+    Type: AWS::CodeBuild::Project
+    Properties:
+      Name: streamlit-app-build-${self:provider.stage}
+      ServiceRole: arn:aws:iam::${self:custom.config.${self:provider.stage}.account_id}:role/CoffeeLandCodeBuildServiceRole
+      Artifacts:
+        Type: CODEPIPELINE
+        Name: streamlit-app-artifact-${self:provider.stage}
+      BadgeEnabled: true
+      Environment:
+        Type: LINUX_CONTAINER
+        Image: aws/codebuild/standard:7.0
+        ComputeType: BUILD_GENERAL1_SMALL
+        PrivilegedMode: true
+        EnvironmentVariables:
+          - Name: STAGE
+            Type: PLAINTEXT
+            Value: ${self:provider.stage}
+      Source:
+        Type: CODEPIPELINE
+        BuildSpec: buildspec.yml
+      TimeoutInMinutes: 60
+      Tags:
+        - Key: Environment
+          Value: ${self:provider.stage}
+        - Key: Project
+          Value: streamlit-app
+        - Key: Owner
+          Value: coffeeland
+
+  CodeBuildLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: /aws/codebuild/streamlit-app-build-${self:provider.stage}
+      RetentionInDays: 30
+      Tags:
+        - Key: Environment
+          Value: ${self:provider.stage}
+        - Key: Project
+          Value: streamlit-app
+        - Key: Owner
+          Value: coffeeland
+
+  CodePipeline:
+    Type: AWS::CodePipeline::Pipeline
+    Properties:
+      Name: streamlit-app-kickstart-pipeline-${self:provider.stage}
+      RoleArn: arn:aws:iam::${self:custom.config.${self:provider.stage}.account_id}:role/CoffeeLandCodePipelineServiceRole
+      Stages:
+        - Name: Source
+          Actions:
+            - Name: Source
+              ActionTypeId:
+                Category: Source
+                Owner: ThirdParty
+                Provider: GitHub
+                Version: "1"
+              OutputArtifacts:
+                - Name: SourceOutput
+              Configuration:
+                Owner: ${self:custom.config.default.repo_owner}
+                Repo: streamlit-app-kickstart
+                Branch: ${self:custom.config.${self:provider.stage}.branch}
+                OAuthToken: ${self:custom.config.default.github_token}
+                PollForSourceChanges: false
+              RunOrder: 1
+        - Name: Deploy
+          Actions:
+            - Name: DeployAction
+              ActionTypeId:
+                Category: Build
+                Owner: AWS
+                Provider: CodeBuild
+                Version: "1"
+              InputArtifacts:
+                - Name: SourceOutput
+              OutputArtifacts:
+                - Name: DeployOutput
+              Configuration:
+                ProjectName:
+                  Ref: CodeBuildProject
+                PrimarySource: SourceOutput
+              RunOrder: 2
+      ArtifactStore:
+        Type: S3
+        Location:
+          Ref: ArtifactBucket
+      Tags:
+        - Key: Environment
+          Value: ${self:provider.stage}
+        - Key: Project
+          Value: streamlit-app
+        - Key: Owner
+          Value: coffeeland
+
+  PipelineWebhook:
+    Type: AWS::CodePipeline::Webhook
+    Properties:
+      Name: streamlit-app-kickstart-webhook-${self:provider.stage}
+      TargetPipeline:
+        Ref: CodePipeline
+      TargetAction: Source
+      Filters:
+        - JsonPath: ${self:custom.config.${self:provider.stage}.json_path}
+          MatchEquals: ${self:custom.config.${self:provider.stage}.match_equal}
+      Authentication: GITHUB_HMAC
+      AuthenticationConfiguration:
+        SecretToken: ${self:custom.config.default.github_token}
+      RegisteWithThirdParty: true
+      TargetPipelinVeVersion:
+        Fn::GetAtt: [CodePipeline, Version]
+      Tags:
+        - Key: Environment
+          Value: ${self:provider.stage}
+        - Key: Project
+          Value: streamlit-app
+        - Key: Owner
+          Value: coffeeland
+
+Outputs:
+  ArtifactBucketName:
+    Description: Name of the S3 bucket for artifacts
+    Value:
+      Ref: ArtifactBucket
+    Export:
+      Name: streamlit-app-artifact-bucket-${self:provider.stage}

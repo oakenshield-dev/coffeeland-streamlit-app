@@ -1,0 +1,64 @@
+# Python
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+*.pyc
+*.pkl
+*.egg-info/
+.eggs/
+dist/
+build/
+
+# Jupyter Notebooks
+.ipynb_checkpoints/
+
+# VS Code
+.vscode/
+.settings/
+
+# macOS
+.DS_Store
+
+# Environment
+.env
+.env.*
+.venv/
+venv/
+
+# AWS
+*.pem
+*.key
+*.crt
+.aws/
+
+# Docker
+*.log
+docker-compose.override.yml
+
+# Node/npm (if any JS tooling)
+node_modules/
+
+# Misc
+*.bak
+*.swp
+*.swo
+*.tmp
+
+# Ignore local data
+coffee.csv
+
+# Ignore deployment artifacts
+*.zip
+*.tar.gz
+
+# Ignore serverless outputs
+.serverless/
+
+# Ignore test outputs
+htmlcov/
+.coverage
+.tox/
+
+# Ignore secrets
+secrets.*

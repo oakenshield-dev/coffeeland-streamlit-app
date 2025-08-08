@@ -1,0 +1,8 @@
+version: 0.2
+phases:
+  install:
+    commands:
+      - npm install -g serverless@3.38.0
+  build:
+    commands:
+      - cd kickstart & serverless deploy --config serverless.yml

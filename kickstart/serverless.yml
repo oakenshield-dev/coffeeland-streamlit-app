@@ -1,0 +1,27 @@
+service: streamlit-app-kickstart
+frameworkVersion: "3.38.0"
+
+provider:
+  name: aws
+  region: us-east-1
+  stage: ${opt:stage, 'dev'}
+  deploymentBucket:
+    serverSideEncryption: aws:kms
+  iam:
+    # arn:aws:iam::620367910565:role/CoffeeLandCloudFormationDeploymentRole
+    role: arn:aws:iam::${self:custom.config.${self:provider.stage}.account_id}:role/CoffeeLandCloudFormationDeploymentRole
+  versionFunctions: false
+
+custom:
+  config:
+    default:
+      repo_owner: coffeeland
+      github_token: ${ssm:/streamlit-app-kickstart/${self:provider.stage}/github_token}
+    dev:
+      account_id: 620367910565 # alias: coffeeland-dev
+      branch: develop
+      json_path: "$.ref"
+      match_equal: "refs/heads/{Branch}"
+
+resources:
+  - ${file(./kickstart-pipeline.yml)}

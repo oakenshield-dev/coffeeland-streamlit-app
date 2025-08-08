@@ -28,6 +28,11 @@ def main():
     filtered_data = coffee_data[coffee_data['Data.Type.Variety'] == variety_filter]
     st.write(filtered_data)
 
+    # Display a dataset of the coffee data but can filter by Data.Type.Processing Method
+    st.subheader("Coffee Data by Processing Method")
+    processing_method_filter = st.selectbox("Select Processing Method", coffee_data['Data.Type.Processing Method'].unique())
+    filtered_processing_data = coffee_data[coffee_data['Data.Type.Processing Method'] == processing_method_filter]
+    st.write(filtered_processing_data)
 
 if __name__ == "__main__":
     main()

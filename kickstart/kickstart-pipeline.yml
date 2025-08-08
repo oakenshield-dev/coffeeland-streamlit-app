@@ -158,7 +158,7 @@ Resources:
       AuthenticationConfiguration:
         SecretToken: ${self:custom.config.default.github_token}
       RegisterWithThirdParty: true
-      TargetPipelinVersion:
+      TargetPipelineVersion:
         Fn::GetAtt: [CodePipeline, Version]
 
 Outputs:

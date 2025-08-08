@@ -9,10 +9,6 @@ Resources:
           - Id: ExpirationRule
             Status: Enabled
             ExpirationInDays: 30
-      bucketEncryption:
-        ServerSideEncryptionConfiguration:
-          - ServerSideEncryptionByDefault:
-              - SSEAlgorithm: aws:kms
       PubliAccessBlockConfiguration:
         BlockPublicAcls: true
         IgnorePublicAcls: true

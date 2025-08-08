@@ -111,7 +111,7 @@ Resources:
                 - Name: SourceOutput
               Configuration:
                 Owner: ${self:custom.config.default.repo_owner}
-                Repo: streamlit-app-kickstart
+                Repo: ${self:custom.config.default.repo_name}
                 Branch: ${self:custom.config.${self:provider.stage}.branch}
                 OAuthToken: ${self:custom.config.default.github_token}
                 PollForSourceChanges: false

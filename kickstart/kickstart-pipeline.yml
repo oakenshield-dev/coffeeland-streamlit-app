@@ -12,7 +12,7 @@ Resources:
       bucketEncryption:
         ServerSideEncryptionConfiguration:
           - ServerSideEncryptionByDefault:
-              SSEAlgorithm: AES256
+              SSEAlgorithm: aws:kms
       PubliAccessBlockConfiguration:
         BlockPublicAcls: true
         IgnorePublicAcls: true

@@ -44,7 +44,7 @@ Resources:
             Value: ${self:provider.stage}
       Source:
         Type: CODEPIPELINE
-        BuildSpec: buildspec.yml
+        BuildSpec: kickstart/buildspec.yml
       TimeoutInMinutes: 60
       Tags:
         - Key: Environment

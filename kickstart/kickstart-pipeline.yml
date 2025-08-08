@@ -3,16 +3,21 @@ Resources:
   ArtifactBucket:
     Type: AWS::S3::Bucket
     Properties:
-      BucketName: streamlit-app-artifact-bucket-${self:provider.stage}
+      BucketName:
+        Fn::Sub: streamlit-app-artifact-bucket-${Stage}
       LifecycleConfiguration:
-        - Id: ExpirationRule
-          Status: Enabled
-          ExpirationInDays: 30
-      PubliAccessBlockConfiguration:
-        - BlockPublicAcls: true
-          IgnorePublicAcls: true
-          RestrictPublicBuckets: true
-          BlockPublicPolicy: true
+        Rules:
+          - Id: ArtifactRule
+            Status: Enabled
+            ExpirationInDays: 90
+          - Id: CleanupRule
+            Status: Enabled
+            NoncurrentVersionExpirationInDays: 30
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+        BlockPublicPolicy: true
       Tags:
         - Key: Environment
           Value: ${self:provider.stage}
@@ -24,7 +29,8 @@ Resources:
   ArtifactS3BucketPolicy:
     Type: AWS::S3::BucketPolicy
     Properties:
-      Bucket: ArtifactBucket
+      Bucket:
+        Ref: ArtifactBucket
       PolicyDocument:
         Version: "2012-10-17"
         Statement:

@@ -160,13 +160,6 @@ Resources:
       RegisteWithThirdParty: true
       TargetPipelinVeVersion:
         Fn::GetAtt: [CodePipeline, Version]
-      Tags:
-        - Key: Environment
-          Value: ${self:provider.stage}
-        - Key: Project
-          Value: streamlit-app
-        - Key: Owner
-          Value: coffeeland
 
 Outputs:
   ArtifactBucketName:

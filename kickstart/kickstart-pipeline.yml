@@ -3,8 +3,7 @@ Resources:
   ArtifactBucket:
     Type: AWS::S3::Bucket
     Properties:
-      BucketName:
-        Fn::Sub: streamlit-app-artifact-bucket-${Stage}
+      BucketName: streamlit-app-artifact-bucket-${self:provider.stage}
       LifecycleConfiguration:
         Rules:
           - Id: ArtifactRule

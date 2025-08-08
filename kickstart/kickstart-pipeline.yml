@@ -9,10 +9,10 @@ Resources:
           Status: Enabled
           ExpirationInDays: 30
       PubliAccessBlockConfiguration:
-        BlockPublicAcls: true
-        IgnorePublicAcls: true
-        RestrictPublicBuckets: true
-        BlockPublicPolicy: true
+        - BlockPublicAcls: true
+          IgnorePublicAcls: true
+          RestrictPublicBuckets: true
+          BlockPublicPolicy: true
       Tags:
         - Key: Environment
           Value: ${self:provider.stage}

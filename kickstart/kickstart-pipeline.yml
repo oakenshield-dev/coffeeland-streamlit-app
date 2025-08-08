@@ -157,8 +157,8 @@ Resources:
       Authentication: GITHUB_HMAC
       AuthenticationConfiguration:
         SecretToken: ${self:custom.config.default.github_token}
-      RegisteWithThirdParty: true
-      TargetPipelinVeVersion:
+      RegisterWithThirdParty: true
+      TargetPipelinVersion:
         Fn::GetAtt: [CodePipeline, Version]
 
 Outputs:

@@ -16,7 +16,7 @@ custom:
   config:
     default:
       repo_owner: oakenshield-dev
-      repo_name: streamlit-app-kickstart
+      repo_name: coffeeland-streamlit-app
       github_token: ${ssm:/streamlit-app-kickstart/${self:provider.stage}/github_token}
     dev:
       account_id: 620367910565 # alias: coffeeland-dev

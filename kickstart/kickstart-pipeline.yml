@@ -4,11 +4,10 @@ Resources:
     Type: AWS::S3::Bucket
     Properties:
       BucketName: streamlit-app-artifact-bucket-${self:provider.stage}
-      LifecycleCOnfiguration:
-        Rules:
-          - Id: ExpirationRule
-            Status: Enabled
-            ExpirationInDays: 30
+      LifeCicleConfiguration:
+        - Id: ExpirationRule
+          Status: Enabled
+          ExpirationInDays: 30
       PubliAccessBlockConfiguration:
         BlockPublicAcls: true
         IgnorePublicAcls: true
